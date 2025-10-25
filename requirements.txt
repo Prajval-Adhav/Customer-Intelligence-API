@@ -1,0 +1,10 @@
+gunicorn
+fastapi
+pydantic
+requests
+neo4j
+python-dotenv
+tqdm
+logger
+uvicorn[standard]
+pytest
