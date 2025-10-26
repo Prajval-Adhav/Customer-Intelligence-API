@@ -1,7 +1,8 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Query
 from typing import List
 from app.db import driver
 from app.models.user import User, UserCreate, UserUpdate
+from app.utils.search import search_nodes
 
 router = APIRouter()
 
@@ -56,3 +57,12 @@ def update_user(user_id: str, user: UserUpdate):
         if not record:
             raise HTTPException(status_code=404, detail="User not found")
         return User(**record)
+
+#Search by activity name:
+@router.get("/search_name")
+def search_users(name: str = Query(..., description="Search Users by name")):
+    try:
+        results = search_nodes("User",name)
+        return results
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))

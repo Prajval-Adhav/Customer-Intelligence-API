@@ -1,7 +1,8 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Query
 from typing import List
 from app.db import driver
 from app.models.opportunity import Opportunity, OpportunityCreate, OpportunityUpdate
+from app.utils.search import search_nodes
 
 router = APIRouter()
 
@@ -95,3 +96,12 @@ def link_opportunity_to_account(opportunity_id: str, account_id: str):
         if not record:
             raise HTTPException(status_code=404, detail="Opportunity or Account not found")
         return {"message": f"Opportunity {opportunity_id} linked to Account {account_id}"}
+    
+#Search by activity name:
+@router.get("/search_name")
+def search_users(name: str = Query(..., description="Search Opportunities by name")):
+    try:
+        results = search_nodes("Activity",name)
+        return results
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))    

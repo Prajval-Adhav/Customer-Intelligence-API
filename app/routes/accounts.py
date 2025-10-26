@@ -1,4 +1,5 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, Query, HTTPException
+from app.utils.search import search_nodes
 from typing import List
 from app.db import driver
 from app.models.account import Account, AccountCreate, AccountUpdate
@@ -78,3 +79,11 @@ def link_lead_to_account(account_id: str, lead_id: str):
         if not record:
             raise HTTPException(status_code=404, detail="Account or Lead not found")
         return {"message": f"Lead {lead_id} linked to Account {account_id}"}
+
+@router.get("/search_name")
+def search_users(name: str = Query(..., description="Search accounts by name")):
+    try:
+        results = search_nodes("Account",name)
+        return results
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))

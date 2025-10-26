@@ -1,7 +1,8 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Query
 from typing import List
 from app.db import driver
 from app.models.deal import Deal, DealCreate, DealUpdate
+from app.utils.search import search_nodes
 
 router = APIRouter()
 
@@ -90,3 +91,13 @@ def link_deal_to_account(deal_id: str, account_id: str):
         if not record:
             raise HTTPException(status_code=404, detail="Deal or Account not found")
         return {"message": f"Deal {deal_id} linked to Account {account_id}"}
+
+
+#Search by activity name:
+@router.get("/search_name")
+def search_users(name: str = Query(..., description="Search Deal by name")):
+    try:
+        results = search_nodes("Deal",name)
+        return results
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))

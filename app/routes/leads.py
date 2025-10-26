@@ -1,7 +1,8 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Query
 from typing import List
 from app.db import driver
 from app.models.lead import Lead, LeadCreate, LeadUpdate
+from app.utils.search import search_nodes
 
 router = APIRouter()
 
@@ -82,3 +83,12 @@ def update_lead(lead_id: str, lead: LeadUpdate):
         if not record:
             raise HTTPException(status_code=404, detail="Lead not found")
         return Lead(**record)
+    
+#Search by activity name:
+@router.get("/search_name")
+def search_users(name: str = Query(..., description="Search Leads by name")):
+    try:
+        results = search_nodes("Lead",name)
+        return results
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))    

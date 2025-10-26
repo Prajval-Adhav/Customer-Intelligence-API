@@ -1,7 +1,8 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Query
 from typing import List
 from app.db import driver
 from app.models.activity import Activity, ActivityCreate, ActivityUpdate
+from app.utils.search import search_nodes
 
 router = APIRouter()
 
@@ -93,3 +94,13 @@ def update_activity(activity_id: str, activity: ActivityUpdate):
         if not record:
             raise HTTPException(status_code=404, detail="Activity not found")
         return Activity(**record)
+
+
+#Search by activity name:
+@router.get("/search_name")
+def search_users(name: str = Query(..., description="Search Activity by name")):
+    try:
+        results = search_nodes("Activity",name)
+        return results
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
